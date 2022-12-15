@@ -1,0 +1,12 @@
+apps:
+  - script: ./dist/main.js
+    name: game-main
+    watch: true
+    instances: max
+    exec_mode: cluster
+    env:
+      PORT: ${CLIENT_PORT}
+      NODE_ENV: development
+    env_production:
+      NODE_PORT: ${CLIENT_PORT}
+      NODE_ENV: production

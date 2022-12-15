@@ -1,0 +1,107 @@
+# docker compose version
+version: "3.7"
+# all the containers have to declare inside services
+services:
+  # microservice
+  gameMicroService:
+    # application rely on database running
+    depends_on:
+      - db
+    # this build context will take the commands from Dockerfile
+    build:
+      context: ./GameMicroService-main/
+      dockerfile: Dockerfile
+    # image name
+    image: game-micro-service
+    # container name
+    container_name: GameMicroService
+    # always restart the container if it stops.
+    restart: always
+    # docker run -t is allow
+    tty: true
+    # application port, this is take value from env file
+    ports:
+      - "${MICRO_SERVER_PORT}:${MICRO_SERVER_PORT}"
+    expose:
+      - 8881
+    # working directory
+    working_dir: /var/www/game-micro-service
+    # application environment
+    environment:
+      SERVICE_NAME: gameMicroService
+      SERVICE_TAGS: dev
+      SERVICE_DB_HOST: ${DATABASE_HOST}:${DATABASE_PORT}
+      SERVICE_DB_USER: ${DATABASE_USERNAME}
+      SERVICE_DB_PASSWORD: ${DATABASE_PASSWORD}
+    # save (persist) data and also to share data between containers
+    volumes:
+      - ./GameMicroService-main:/var/www/game-micro-service
+      - /var/www/game-micro-service/node_modules
+    # application network, each container for a service joins this network
+    networks:
+      - game-network
+  # App service
+  game:
+    # application rely on database running
+    depends_on:
+      - db
+      - gameMicroService
+    # this build context will take the commands from Dockerfile
+    build:
+      context: ./Game-main/
+      dockerfile: Dockerfile
+    # image name
+    image: game
+    # container name
+    container_name: Game
+    # always restart the container if it stops.
+    restart: always
+    # docker run -t is allow
+    tty: true
+    # application port, this is take value from env file
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    # working directory
+    working_dir: /var/www/game-main
+    # application environment
+    environment:
+      SERVICE_NAME: Game
+      SERVICE_TAGS: dev
+    # save (persist) data and also to share data between containers
+    volumes:
+      - ./Game-main:/var/www/game-main
+      - /var/www/game-main/node_modules
+    # application network, each container for a service joins this network
+    networks:
+      - game-network
+  # Database service
+  db:
+    # pull image from docker hub
+    image: mongo
+    # container name
+    container_name: nestmongo
+    # always restart the container if it stops.
+    restart: always
+    # database credentials, this is take value from env file
+
+    # save (persist) data and also to share data between containers
+    volumes:
+      - db_data:/data/db
+    # database port
+    ports:
+      - "${DATABASE_PORT}"
+    expose:
+      - 27017
+    # application network, each container for a service joins this network
+    networks:
+      - game-network
+
+
+#Docker Networks
+networks:
+  # All container connect in a network
+  game-network:
+    driver: bridge
+# save (persist) data
+volumes:
+  db_data: {}
