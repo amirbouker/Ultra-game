@@ -3,7 +3,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 async function main() {
   console.log('🚀  Server ready');
 
-  const url = `mongodb://db:27017/`;
+  const url = `mongodb://nestmongo:27017/`;
 
   const dbName = 'ULTRA';
 
@@ -61,13 +61,13 @@ async function main() {
     ];
 
     games.map(async (item) => {
-      await db.collection('games').insertOne({
+      await db.collection('game').insertOne({
         _id: new ObjectId(item._id.$oid),
         title: item.title,
         price: item.price,
         discounted: item.discounted,
         tags: item.tags,
-        publisher: item.publisher,
+        publisher: new ObjectId(item.publisher.$oid),
         resleaseDate: item.resleaseDate,
         createdAt: +new Date(),
         updatedAt: +new Date(),
@@ -94,10 +94,10 @@ async function main() {
       },
     ];
     publishers.map(async (item) => {
-      await db.collection('publishers').insertOne({
+      await db.collection('publisher').insertOne({
         _id: new ObjectId(item._id.$oid),
         name: item.name,
-        siret: item.siret,
+        siret: +item.siret,
         phone: item.phone,
         createdAt: +new Date(),
         updatedAt: +new Date(),
@@ -107,7 +107,7 @@ async function main() {
     console.log('❌  Server error', err.stack);
   } finally {
     console.log('💤  Server off');
-    await client.close();
+    //await client.close();
   }
 }
 

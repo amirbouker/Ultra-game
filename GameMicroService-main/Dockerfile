@@ -27,7 +27,7 @@ USER demo
 # install all dependencies
 RUN npm install
 
-RUN npm run db:seed
+#RUN npm run db:seed
 
 EXPOSE 8881
 # start run in production environment

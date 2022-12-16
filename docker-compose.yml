@@ -89,7 +89,7 @@ services:
       - db_data:/data/db
     # database port
     ports:
-      - "${DATABASE_PORT}"
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
     expose:
       - 27017
     # application network, each container for a service joins this network

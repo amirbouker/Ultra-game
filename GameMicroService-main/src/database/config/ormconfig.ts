@@ -1,5 +1,4 @@
 export function ormConfig(): any {
-  console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', process.env.DATABASE_TYPE);
   return {
     type: process.env.DATABASE_TYPE || 'mongodb',
     host: process.env.DATABASE_HOST || 'nestmongo',
